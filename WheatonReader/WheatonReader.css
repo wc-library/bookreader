@@ -1,0 +1,93 @@
+/*
+ * Custom overrides for BookReader.
+ #1f2329
+ #242424
+ */
+
+/* Hide print and embed functionality */
+#BRtoolbar .embed, .print {
+    display: none;
+}
+
+#BRcontainer {
+  background-color: #222;
+}
+
+#BRpageview {
+  background-color: #222;
+}
+
+.BRemptypage {
+  background-color: #222;
+}
+
+#BRpagenum {
+  background-color: #222;
+}
+
+.BRfloatDescription {
+  margin-top: 16px;
+}
+
+.BRtwoPagePopUp {
+  background-color: #222;
+}
+
+div#BRtoolbar {
+  background-color: #333;
+}
+
+div#BRnav {
+  background-color: #333;
+}
+
+#BRnavCntlBtm {
+  background-color: #333;
+}
+
+#BRpager .ui-slider-handle {
+  background: url(BookReader/images/slider2.png);
+}
+
+#BRreturn a { color: #eee; text-decoration: none; font-weight: bold;  }
+#BRreturn a:hover { cursor: default; }
+
+form#booksearch button {
+  background-color: #fff;
+  color: #333;
+}
+
+.BRicon {
+  background-image: url(BookReader/images/BRicons3.png);
+}
+
+.BRicon.full {background-position: -400px 0; }
+.BRicon.fullClose { background-position: -1280px 0; }
+.BRicon.onepg { background-position: -1040px 0; }
+.BRicon.twopg { background-position: -960px 0; }
+.BRicon.thumb { background-position: -1120px 0; }
+.BRicon.zoom_in { background-position: -720px 0; }
+.BRicon.zoom_out { background-position: -640px 0; }
+.BRicon.book_left { background-position: -480px 0; }
+.BRicon.book_right { background-position: -560px 0; }
+.BRicon.play { background-position: -800px 0; }
+.BRicon.pause { background-position: -880px 0; }
+.BRicon.info { background-position: -80px 0; }
+.BRicon.share { background-position: -160px 0; }
+.BRicon.read { background-position: -240px 0; }
+
+.BRdn {
+  background-image: url(BookReader/images/nav_control-dn2.png);
+  }
+
+.BRup {
+  background-image: url(BookReader/images/nav_control-up2.png);
+}
+
+fieldset.sub {display: none; }
+
+a.logo {
+  background: URL('https://library.wheaton.edu/sites/default/files/logo-desktop.png');
+  background-size: contain;
+  width: 107.3px;
+}
