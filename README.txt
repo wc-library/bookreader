@@ -8,3 +8,10 @@ Hosted source code:
 http://github.com/openlibrary/bookreader
 
 The source code license is AGPL v3, as described in the LICENSE file.
+
+
+-------------------------
+Wheaton Reader:
+Important files (starting places):
+	BookMaker/index.php - where to start making books
+	WheatonReader/Reader.php - where to read books (given a correct bookID via GET)
