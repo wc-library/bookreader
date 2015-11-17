@@ -45,7 +45,7 @@ br.getPageHeight = function(index) {
 // We load the images from archive.org -- you can modify this function to retrieve images
 // using a different URL structure
 br.getPageURI = function(index, reduce, rotate) {
-    var file = indexMap[index][1];
+    var file = indexMap[index]["filename"];
     return (file == 'white') ? "Books/white.jpg" : directory + file;
 }
 
@@ -93,7 +93,7 @@ br.getSpreadIndices = function(pindex) {
 // For example, index 5 might correspond to "Page 1" if there is front matter such
 // as a title page and table of contents.
 br.getPageNum = function(index) {
-    return (indexMap[index] == null) ? index : indexMap[index][0];
+    return (indexMap[index] == null) ? index : indexMap[index]["semantic"];
 }
 
 // Total number of leafs

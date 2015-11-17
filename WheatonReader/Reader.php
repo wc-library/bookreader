@@ -1,10 +1,10 @@
 <?php
 
+  include '../BookMaker/config.php';
+  $mysqli = new mysqli("localhost", $dbUser, $dbPass, $dbName);
+  if ($mysqli->connect_error) die('Connect Error (' . $mysqli->connect_errno . ') ' . $mysqli->connect_error);
+
   $bookID = (isset($_REQUEST['bookID'])) ? $_REQUEST['bookID'] : '';
-
-  $database = 'Books/books.db';
-
-  $db = new SQLite3($database);
 
 ?>
 
@@ -36,30 +36,32 @@
 
     <noscript>
     <p>
-        The BookReader requires JavaScript to be enabled. Please check that your browser supports JavaScript and that it is enabled in the browser settings.  You can also try one of the <a href="http://www.archive.org/details/goodytwoshoes00newyiala"> other formats of the book</a>.
+        The BookReader requires JavaScript to be enabled. Please check that your browser supports JavaScript and that it is enabled in the browser settings.
     </p>
     </noscript>
 </div>
 
 <script type="text/javascript" src="WheatonReader.js"></script>
 <?php
-  $result = $db->querySingle('SELECT * FROM books WHERE Id=' . $bookID . ';', true); /*Id, Title, Author, Width, Height, NumPages, Directory, FirstLeft*/
+  /* Query Categories: Id, Title, Author, Width, Height, NumPages, Directory, FirstLeft*/
+  $query = "SELECT * FROM books WHERE Id=$bookID;";
+  $result = $mysqli->query($query);
+  /*print_r($result->fetch_assoc());
+  /*$result = $db->querySingle('SELECT * FROM books WHERE Id=' . $bookID . ';', true); /*Id, Title, Author, Width, Height, NumPages, Directory, FirstLeft*/
   if (isset($result)) {
+    $res = $result->fetch_assoc();
+
+    $jsonFile = $booksDir . "JSON/" . $bookID . ".json";
+    $hand = fopen($jsonFile, "r");
+    $pageData = fread($hand, filesize($jsonFile));
+    $numPages = count(json_decode($pageData));
+    fclose($imageFiles);
+
+
     echo '<script>';
-    echo 'var request = new XMLHttpRequest();';
-    echo 'request.open("GET", "Books/JSON/' . $bookID . '.json", true);';
-    echo 'request.onload = function(e) {';
-    echo '  if (request.readyState == 4) { ';
-    echo '      if (request.status == 200) { ';
-    echo '         setVals(' . $result['Width'] . ', ' . $result['Height'] . ', ' . $result['NumPages'] . ', "' . $result['Title'] . '", "' . $result['Author'] . '", "' .$result['Description'] . '", "' . $result['Directory'] . '", JSON.parse(request.responseText), ' . $result['FirstLeft'] . ', "' . $result['Cover'] . '");';
-    echo '         br.init();';
-    echo "         runAfterInit()";
-    echo '      } else {';
-    echo '         console.error(request.statusText);';
-    echo '      }';
-    echo '  }';
-    echo '};';
-    echo 'request.send();';
+    echo "setVals({$res['Width']}, {$res['Height']}, $numPages, \"{$res['Title']}\", \"{$res['Author']}\", \"{$res['Description']}\", \"{$booksDir}Images/{$bookID}/\", $pageData, {$res['FirstLeft']}, \"{$res['Cover']}\");";
+    echo 'br.init();';
+    echo "runAfterInit();";
     echo '</script>';
   }
   $db->close();

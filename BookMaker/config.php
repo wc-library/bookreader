@@ -1,5 +1,8 @@
 <?php
-  $database = "../WheatonReader/Books/books.db";
   $reader = "../WheatonReader/Reader.php";
-  $booksDir = '../WheatonReader/Books';
+  $booksDir = '../WheatonReader/Books/';
+  $delimiter = "_";
+  $dbName = "BookReader";
+  $dbUser = "root";
+  $dbPass = "password";
 ?>
