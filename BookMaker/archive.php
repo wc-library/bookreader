@@ -33,8 +33,9 @@
     .clickable:hover { opacity: .9; cursor: pointer; background-color: rgba(200, 200, 200, .35); }
     .no_scroll { overflow: hidden; }
     .blackout { position: fixed; width: 100%; height: 100%; z-index: 100; background-color: rgba(0, 0, 0, .6); left: 0; top: 0; }
-    .blackout iframe { margin: 0; position: absolute; top: 50%; left: 50%; margin-right: -50%; height: 80%; width: 80%;
+    #bookView { margin: 0; position: absolute; top: 50%; left: 50%; margin-right: -50%; height: 80%; width: 80%;
                        transform: translate(-50%, -50%); -webkit-transform: translate(-50%, -50%); -moz-transform: translate(-50%, -50%); -ms-transform: translate(-50%, -50%); -o-transform: translate(-50%, -50%); }
+    #bookView.no_center { transform: none; -webkit-transform: none; -moz-transform: none; -ms-transform: none; -o-transform: none; }
   </style>
   <?php echo "<script> var reader = '$reader'; </script>"; ?>
   <script>
@@ -45,6 +46,7 @@
       blackout.onclick = unDisplayBook;
 
       var internal = document.createElement("iframe");
+      internal.id = "bookView";
       internal.src = reader + "?bookID=" + id;
       internal.setAttribute('webkitallowfullscreen', 'true');
       internal.setAttribute('allowfullscreen', 'true')
@@ -93,6 +95,19 @@
         form.submit();
       }
     }
+
+    function allowFullScreen() {
+      var bookView = document.getElementById("bookView");
+      if (bookView) {
+        if (bookView.classList.contains("no_center"))
+          bookView.classList.remove("no_center");
+        else
+          bookView.classList.add("no_center");
+      }
+    }
+    document.addEventListener("fullscreenchange", allowFullScreen, false);
+    document.addEventListener("webkitfullscreenchange", allowFullScreen, false);
+    document.addEventListener("mozfullscreenchange", allowFullScreen, false);
 
   </script>
 </head>
