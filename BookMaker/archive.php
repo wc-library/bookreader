@@ -16,6 +16,8 @@
     $display = (isset($_GET['display'])) ? $_GET['display'] : '';
     $page = (isset($_GET['page'])) ? $_GET['page'] : '1';
 
+
+    // Delete a book if requested
     if ($_POST['delete']) {
       $deleteQuery = "DELETE FROM books WHERE Id={$_POST['delete']};";
       $mysqli->query($deleteQuery);
@@ -40,6 +42,7 @@
   <?php echo "<script> var reader = '$reader'; </script>"; ?>
   <script>
 
+    // Display a book from given id on a semi-black backdrop
     function displayBook(id) {
       var blackout = document.createElement("blackout");
       blackout.classList.add("blackout");
@@ -56,6 +59,7 @@
       document.body.classList.add("no_scroll");
     }
 
+    // Remove book being displayed & backdrop
     function unDisplayBook() {
       var blackout = document.getElementsByClassName("blackout")[0];
       if (blackout !== null) {
@@ -64,6 +68,7 @@
       }
     }
 
+    // Make embed elment drop down below the button
     function displayEmbed(elment) {
       var embedElment = elment.parentNode.getElementsByClassName("embedCode")[0];
       if (embedElment.classList.contains("displayed"))
@@ -74,11 +79,13 @@
       }
     }
 
+    // Select all Text in an element
     function selectAllTxt(elment) {
       elment.focus();
       elment.select();
     }
 
+    // Set a book of given Id to be deleted then reload page after confirming that they want to delete the book
     function deleteBook(id, title) {
       if (confirm("Are you sure you would like to delete '" + title + "'?")) {
         var form = document.createElement('form');
@@ -96,6 +103,7 @@
       }
     }
 
+    // Remove transformations when iframe is set to fullscreen that would offset the fullscreen view
     function allowFullScreen() {
       var bookView = document.getElementById("bookView");
       if (bookView) {
@@ -112,6 +120,8 @@
   </script>
 </head>
 <body>
+
+  <!-- Navbar -->
   <nav class="navbar navbar-default">
     <div class="container-fluid">
       <div class="navbar-header">
@@ -125,15 +135,21 @@
       </div>
     </div>
   </nav>
+
+  <!-- Content -->
   <div class="container">
-  <div id="content" class="col-sm-10 col-sm-offset-1">
-    <h1>Digital Book Archive</h1>
-    <form action='archive.php' role="form" class="form-inline" method='get' id='search'>
-      <input type='text' class="form-control" class="" name='search' size=40 <?php if ($search) echo "value='$search'";?>>
-      <input type='submit' class="btn btn-default btn-sm" name='submit' value='Search'>
-      <a href='archive.php'><button class="btn btn-default btn-sm" type='button'>Clear</button></a>
-    </form>
+    <div id="content" class="col-sm-10 col-sm-offset-1">
+      <h1>Digital Book Archive</h1>
+      <!-- Search Bar -->
+      <form action='archive.php' role="form" class="form-inline" method='get' id='search'>
+        <input type='text' class="form-control" class="" name='search' size=40 <?php if ($search) echo "value='$search'";?>>
+        <input type='submit' class="btn btn-default btn-sm" name='submit' value='Search'>
+        <a href='archive.php'><button class="btn btn-default btn-sm" type='button'>Clear</button></a>
+      </form>
+
       <?php
+
+        // Get information about stored books
         $query = "SELECT * FROM books";
         $countQuery = "SELECT Count(*) AS count FROM books";
         if ($search) {
@@ -161,28 +177,29 @@
           $navLast = $numPages;
         }
 
-        // Create the Pagination Bars
+        // Create Pagination Bars template
         $searchAddon = ($search) ? "&search=$search" : "";
-        $pageString = "<nav><ul class='pagination'>";
-        $pageString .= ($page == 1) ?
+        $paginationBar = "<nav><ul class='pagination'>";
+        $paginationBar .= ($page == 1) ?
             "<li class='disabled'><a href='#' aria-label='Previous'><span aria-hidden='true'>&lt</span></a></li>" :
             "<li><a href=archive.php?page=" . ($page - 1) . "$searchAddon aria-label='Previous'><span aria-hidden='true'>&lt</span></a></li>";
         while ($navIndex <= $navLast) {
-          $pageString .= ($navIndex == $page) ?
+          $paginationBar .= ($navIndex == $page) ?
             "<li class='active'><a href='#'>$navIndex<span class='sr-only'>(current)</span></a></li>" :
             "<li><a href='archive.php?page=$navIndex$searchAddon'>$navIndex</a></li>";
           $navIndex++;
         }
-        $pageString .= ($page == $numPages) ?
+        $paginationBar .= ($page == $numPages) ?
             "<li class='disabled'><a href='#' aria-label='Next'><span aria-hidden='true'>&gt</span></a></li>" :
             "<li><a href=archive.php?page=" . ($page + 1) . "$searchAddon aria-label='Next'><span aria-hidden='true'>&gt</span></a></li>";
-        $pageString .= "</ul></nav>";
+        $paginationBar .= "</ul></nav>";
+
 
         if ($result->num_rows > 0) {
-          echo $pageString;
+          echo $paginationBar;
           echo "<ul id='bookList' class='media-list'>";
 
-          // Display book listings
+          // Display a listing of 10 books
           while ($res = $result->fetch_assoc()) {
             if (strlen($res['Title']) > 30) $res['Title'] = substr($res['Title'], 0, 30) . '...';
             echo "<li class='media'>";
@@ -202,7 +219,7 @@
           }
 
           echo "</ul>";
-          echo $pageString;
+          echo $paginationBar;
         } else if ($search) {
           echo "Your search had no results, sorry";
         } else if ($page == 1) {
@@ -210,7 +227,7 @@
         }
 
       ?>
-
+    </div>
   </div>
 </body>
 </html>

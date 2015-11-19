@@ -7,16 +7,19 @@
   <link rel="stylesheet" type="text/css" href="Assets/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   <script src="Assets/js/bootstrap.min.js"></script>
-  <!-- Upload styling curstosy of 'http://www.abeautifulsite.net/whipping-file-inputs-into-shape-with-bootstrap-3/' -->
+  <!-- Upload button styling curstosy of 'http://www.abeautifulsite.net/whipping-file-inputs-into-shape-with-bootstrap-3/' -->
   <style>
     .btn-file { position: relative; overflow: hidden; }
     .btn-file input[type=file] { position: absolute; top: 0; right: 0; min-width: 100%; min-height: 100%; font-size: 100px; text-align: right; filter: alpha(opacity=0); opacity: 0; outline: none; background: white; cursor: inherit; display: block; }
   </style>
+
   <style>
     body { background: linear-gradient(to right,#A3B58E 0%,#C6D6AE 50%,#A3B58E 100%); }
   </style>
+
   <?php
     $action = ($_GET["edit"]) ? "edit" : "create";
+    // If editing a book, get information on book from MySqli DB
     if ($_GET["edit"]) {
       include "config.php";
       $id = $_GET["edit"];
@@ -31,7 +34,9 @@
     }
   ?>
 </head>
+
 <body>
+  <!-- NavBar -->
   <nav class="navbar navbar-default">
     <div class="container-fluid">
       <div class="navbar-header">
@@ -47,6 +52,9 @@
       </div>
     </div>
   </nav>
+
+
+  <!-- Content -->
   <div class="container">
       <div class="col-sm-10 col-sm-offset-1">
         <h1>Digital Book <?php echo ($action == "create") ? "Creator" : "Editor";?></h1>
@@ -69,36 +77,43 @@
               <textarea form="form" class="form-control" name="description" id="description" rows="6"><?php if ($info && $info["Description"]) echo $info['Description']; ?></textarea>
             </div>
           </div>
+
           <hr>
+
+          <!-- If creating, add an upload element -->
           <?php if (!$info) { ?>
-          <div class="form-group">
-            <label class='control-label col-sm-2' for='zipUpload'>Upload: </label>
-            <div class="input-group col-sm-5">
-              <span class="input-group-btn">
-                <span class="btn btn-default btn-file">
-                  Browse&hellip;<input type="file" class="file-upload" name="zipUpload" id="zipUpload" required>
+            <div class="form-group">
+              <label class='control-label col-sm-2' for='zipUpload'>Upload: </label>
+              <div class="input-group col-sm-5">
+                <span class="input-group-btn">
+                  <span class="btn btn-default btn-file">
+                    Browse&hellip;<input type="file" class="file-upload" name="zipUpload" id="zipUpload" required>
+                  </span>
                 </span>
-              </span>
-              <input type="text" class="form-control" readonly>
+                <input type="text" class="form-control" readonly>
+              </div>
             </div>
-          </div>
+          <!-- If editing, add elements for each value to be passed along -->
+          <?php } else { ?>
+            <input type='hidden' name='id' value=<?php echo $id; ?>>
+            <input type='hidden' name='first_left' value=<?php echo $info['FirstLeft']; ?>>
+            <input type='hidden' name='cover' value=<?php echo $info['Cover']; ?>>
           <?php } ?>
+
           <div style="float: right;">
             <input type='submit' id='submit' class="btn btn-lg btn-default" value='continue'>
           </div>
-          <input type='hidden' name='action' value=<?php echo "'$action'"; ?> id='action'>
-          <?php if ($action == "edit") {
-            echo "<input type='hidden' name='id' value=$id>";
-            echo "<input type='hidden' name='first_left' value='" . $info['FirstLeft'] . "'>";
-            echo "<input type='hidden' name='cover' value='" . $info['Cover'] . "'>";
-            echo "<input type='hidden' name='first_left' value='" . $info['FirstLeft'] . "'>";
-          } ?>
-          <input type='hidden' name='step' value='1' id='step'>
+          <input type='hidden' name='action' id='action' value=<?php echo "$action"; ?>>
+          <input type='hidden' name='step' id='step' value='1'>
         </form>
       </div>
+
     </div>
   </div>
+
   <script>
+
+    // Foreach .file-upload, once a file is uploaded, update the input element nearby to display the name uploaded
     var fUploads = document.getElementsByClassName("file-upload");
     for (var i = 0; i < fUploads.length; i++)
       fUploads[i].onchange = function(evt) {
@@ -106,13 +121,12 @@
         evt.currentTarget.parentNode.parentNode.parentNode.getElementsByTagName("input")[1].value = upFile;
       };
 
+    // Submit form using Ajax & move on to confirm.php once it has run
     function submitForm(form) {
-      // Create and submit form using Ajax
       var xmlhttp = new XMLHttpRequest();
       xmlhttp.onreadystatechange = function() { if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
 
           var results = JSON.parse(xmlhttp.responseText);
-          //Validation?
 
           var form = document.createElement("form");
           form.action = "confirm.php"

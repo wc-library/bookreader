@@ -59,8 +59,9 @@
     }
   }
 
-  // Get all Post variables
+  // Step 1: submission of title, author, description, & zipfile (if creating)
   if ($_POST['step'] == "1") {
+    // Get all Post variables
     $action = $_POST['action'];
     if ( $action == "create" && (!isset($_FILES) || !isset($_FILES['zipUpload']))) exit("No Zip File Uploaded");
     $id = (isset($_POST['id'])) ? $_POST['id'] : '';
@@ -70,10 +71,10 @@
     $first_left = (isset($_POST['first_left'])) ? $_POST['first_left'] : '1';
     $cover = (isset($_POST['cover'])) ? $_POST['cover'] : '';
 
+    // Parse zipped pages
     if ($action == "create") {
-      // Parse zipped pages
       $pages = parseZipFilenames($_FILES['zipUpload']['tmp_name']);
-      // Zipped pages parsed
+    // Zipped pages parsed
 
 
       // Replace missing indices with blank pages
@@ -98,11 +99,11 @@
       $tmpDir = 'tmp/';
       if ($res !== TRUE) { /*quit*/ }
 
-      // Assure tmp folder is empty
+      // Make sure tmp folder is empty
       recursiveDelete($tmpDir);
       $zip->extractTo($tmpDir);
 
-      // If the the thing extracted is a directory
+      // If the the thing extracted is a directory, move all img files up into tmp directory
       $parDir = $zip->getNameIndex(0);
       if (is_dir($tmpDir . $parDir)) {
         foreach (glob($tmpDir . $parDir . "*") as $path)
@@ -112,19 +113,19 @@
       $zip->close();
       // Img Files extracted to tmp folder
 
+      // Default cover img is the first image
       if (!$cover) $cover = $pages[0]['filename'];
-      list($width, $height) = getimagesize($tmpDir . $cover);
-    } else {
 
+      // Get height & width of all pages by get size of the cover
+      list($width, $height) = getimagesize($tmpDir . $cover);
     }
 
+    // Write all information to be returned
     $tmpStore = [ "action" => $action, "id" => $id, "title" => $title, "author" => $author, "desc" => $desc, "width" => $width,
                   "height" => $height, "first_left" => $first_left, "cover" => $cover , "pages" => $pages ];
-    /*$f = fopen($tmpDir . "tmp.json", "w");
-    fwrite($f, json_encode($tmpStore));
-    fclose($f);*/
     echo json_encode($tmpStore);
 
+  // Step 2: orgainzation of pages & official write/edit of book to disk
   } elseif ($_POST['step'] == '2') {
     $action = $_POST['action'];
     $id = (isset($_POST['id'])) ? $_POST['id'] : '';
@@ -137,7 +138,7 @@
     $height = (isset($_POST['height'])) ? $_POST['height'] : '0';
     $width = (isset($_POST['width'])) ? $_POST['width'] : '0';
 
-    // Insert into MySql database
+    // Insert into MySqli database
     if ($id)
       $query = "UPDATE books SET Title='$title', Author='$author', Description='$desc', FirstLeft=$first_left, Cover='$cover' WHERE Id=$id";
     else
@@ -151,13 +152,8 @@
     foreach ($pages as $currPage)
       rename($tmpDir . $currPage['filename'], $booksDir . "Images/" . $id . "/" . $currPage['filename']);
 
-    // Write JSON file to disk
+    // Write JSON file to disk (page order)
     $f = fopen($booksDir . "JSON/" . $id . ".json", "w");
     fwrite($f, json_encode($pages));
     fclose($f);
-
-    if ($id >= 0)
-      echo $id;
-    else
-      echo "error";
   }

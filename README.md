@@ -13,15 +13,15 @@ The source code license is AGPL v3, as described in the LICENSE file.
 -------------------------
 Wheaton Reader:
 
-Important files (starting places):
-	BookMaker/index.php - where to start making books
-	WheatonReader/Reader.php - where to read books (given a correct bookID via GET)
-    
-Important note on initial setup:
-    Create an empty writeable and readable directory in BookMaker/ called 'tmp'
-    Create two empty writeable and readable directories in WheatonReader/Books called 'WheatonReader/Books/JSON' and 'WheatonReader/Books/JSON'
+Install:
+	Clone this repository
+	Run /WheatonReader/Books/init.sql
+	Make sure that the webserver has access to read & write the following 3 directories:
+		1) /BookMaker/tmp/
+		2) /WheatonReader/Books/Images/
+		3) /WheatonReader/Books/JSON/
 
-HOW TO USE THE BOOKMAKER
+HOW TO FORMAT ZIP FILE FOR BOOKMAKER
 	This portion of the BookReader is used to create Books by uploading a zip file of page images
   		Supported image filetypes: png, jpg, and gif
   		Zip files should contain either only image files or 1 directory containing only image files.

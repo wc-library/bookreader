@@ -10,6 +10,9 @@
 
   <?php
     include "config.php";
+
+    // Move post variables into a javascript array 'post'
+
     $json = json_decode($_POST['json'], true);
     $action = $json['action'];
     if ($action == "edit") {
@@ -72,6 +75,8 @@
   </script>
 </head>
 <body>
+
+  <!-- NavBar -->
   <nav class="navbar navbar-default">
     <div class="container-fluid">
       <div class="navbar-header">
@@ -85,6 +90,8 @@
       </div>
     </div>
   </nav>
+
+  <!-- Content -->
   <div class="container">
     <div class="row">
       <div class="col-sm-10 col-sm-offset-1">
@@ -130,15 +137,19 @@
     </div>
     <hr>
     <div class="row">
+
+      <!-- Gallery -->
       <div class="col-sm-10 col-sm-offset-1" id="gallery">
         <p id="gallery_instructions">Update Book Page Names & Select Cover Photo</p>
       </div>
     </div>
   </div>
+
   <script>
+
+    // Load in info from post & update various elements with correct initial information
     var pages = post['pages'];
     var imgDir = post['imgDir'] || "tmp/";
-    console.log(post);
     document.getElementById("coverDisplay").src = imgDir + post['cover'];
     var selectedFirstLeft = document.getElementById((parseInt(post["first_left"])) ? "first_pos_left" : "first_pos_right");
     selectedFirstLeft.checked = "checked";
@@ -146,7 +157,10 @@
     document.getElementById("title_div").getElementsByClassName("cat-info")[0].innerHTML = post['title'];
     if (post['author']) document.getElementById("author_div").getElementsByClassName("cat-info")[0].innerHTML = post['author'];
     else document.getElementById("author_div").style.display = "none";
+
+    // Number of imgs displayed per row
     var perRow = 4;
+    // Display all images uploaded in the gallery div
     for (var i = 0; i < pages.length / perRow; i++) {
       var row = document.createElement("div");
       row.classList.add("row");
@@ -187,6 +201,7 @@
       }
     }
 
+    // Change the cover image displayed as well as updating the stored variable
     function setCover(item) {
       document.getElementsByClassName("coverButton-selected")[0].classList.remove("coverButton-selected");
       item.getElementsByClassName("coverButton")[0].classList.add("coverButton-selected");
@@ -195,6 +210,7 @@
       document.getElementById("form_cover").value = newSrc.substr(newSrc.lastIndexOf("/") + 1);
     }
 
+    // Create a hidden form element with given name and val
     function createFormElment(name, val) {
       var input = document.createElement("input");
       input.type = "hidden";
@@ -203,6 +219,8 @@
       input.value = val;
       return input;
     }
+
+    // Hidden submission form
     var form = document.getElementById('form');
     form.appendChild(createFormElment("action", post['action']));
     form.appendChild(createFormElment("author", post['author']));
@@ -214,6 +232,7 @@
     form.appendChild(createFormElment("title", post['title']));
     form.appendChild(createFormElment("step", "2"));
 
+    // Submit form to process.php & move on to archive once finished
     function submitForm(form) {
       var gInputs = document.getElementById("gallery").getElementsByTagName("input");
       for (var i = 0; i < gInputs.length; i++) {
@@ -235,6 +254,7 @@
       return false;
     }
 
+    // Set up all clickables to be clickable
     var clickables = document.getElementsByClassName("clickable");
     for (var i = 0; i < clickables.length; i++) {
         clickables[i].onclick = displayImg;
