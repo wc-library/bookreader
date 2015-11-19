@@ -1,6 +1,6 @@
 /*Usage: mysql -u '' -p < init.sql */
 
-DROP DATABASE BookReader;
+DROP DATABASE IF EXISTS BookReader;
 CREATE DATABASE BookReader;
 USE BookReader;
 CREATE TABLE books
