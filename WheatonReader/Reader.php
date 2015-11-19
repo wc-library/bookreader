@@ -32,7 +32,7 @@
 <div id="BookReader">
     <!--Anything in this area will be replaced by a book if there is one -->
     Wheaton College Book Reader<br/>
-    (Make sure the book ID was specified in the URL)<br/>
+    Failed To Load Book (this is awkward...)<br/>
 
     <noscript>
     <p>
@@ -43,11 +43,8 @@
 
 <script type="text/javascript" src="WheatonReader.js"></script>
 <?php
-  /* Query Categories: Id, Title, Author, Width, Height, NumPages, Directory, FirstLeft*/
   $query = "SELECT * FROM books WHERE Id=$bookID;";
   $result = $mysqli->query($query);
-  /*print_r($result->fetch_assoc());
-  /*$result = $db->querySingle('SELECT * FROM books WHERE Id=' . $bookID . ';', true); /*Id, Title, Author, Width, Height, NumPages, Directory, FirstLeft*/
   if (isset($result)) {
     $res = $result->fetch_assoc();
 

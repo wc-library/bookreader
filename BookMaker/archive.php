@@ -102,7 +102,7 @@
         if (bookView.classList.contains("no_center"))
           bookView.classList.remove("no_center");
         else
-          bookView.classList.add("no_center");
+          bookView.classList.add("no_center")
       }
     }
     document.addEventListener("fullscreenchange", allowFullScreen, false);
