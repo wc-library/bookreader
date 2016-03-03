@@ -1,6 +1,6 @@
 <?php
 
-  include '../BookMaker/config.php';
+  include_once '../BookMaker/config.php';
   $mysqli = new mysqli("localhost", $dbUser, $dbPass, $dbName);
   if ($mysqli->connect_error) die('Connect Error (' . $mysqli->connect_errno . ') ' . $mysqli->connect_error);
 

@@ -78,14 +78,6 @@
           </div>
           <div class="row">
             <div class="form-group">
-              <label class="control-label col-sm-2" for="readerPath">Reader Path:</label>
-              <div class="col-sm-6">
-                <input type="text" class="form-control" name="readerPath" id="readerPath" value=<?php echo $readerPath; ?> required>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="form-group">
               <label class="control-label col-sm-2" for="delimiter">Delimiter:</label>
               <div class="col-sm-6">
                 <input type="text" class="form-control" name="delimiter" id="delimiter" value=<?php echo $delimiter; ?> required>

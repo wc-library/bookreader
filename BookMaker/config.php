@@ -1,8 +1,8 @@
 <?php
-  if (file_exists("config.json"))
-    $cconfig = json_decode(file_get_contents("config.json"));
+  if (file_exists(dirname(__FILE__) . "/config.json"))
+    $cconfig = json_decode(file_get_contents(dirname(__FILE__) . "/config.json"));
 
-  $readerPath = (isset($cconfig) && isset($cconfig->readerPath)) ? $cconfig->readerPath : "../WheatonReader/";
+  $readerPath = "../WheatonReader/";
   if (substr($readerPath, -1) != "/") $readerPath .= "/";
   $reader = $readerPath . "Reader.php";
   $booksDir = $readerPath . "Books/";
@@ -16,3 +16,5 @@
 
   $ldapBindUser =  (isset($cconfig) && isset($cconfig->ldapBindUser)) ? $cconfig->ldapBindUser : "";
   $ldapBindPass =  (isset($cconfig) && isset($cconfig->ldapBindPass)) ? $cconfig->ldapBindPass : "";
+
+  //BookReader, root, password, ldaps://adldaps.wheaton.edu, ou=People,dc=wheaton,dc=edu, NoteswalLdapBind, 4P0DZBUa*cOmh
