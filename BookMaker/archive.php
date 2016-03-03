@@ -1,3 +1,11 @@
+<?php
+  include_once "auth.php";
+  include_once "config.php";
+
+  $mysqli = new mysqli("localhost", $dbUser, $dbPass, $dbName);
+  if ($mysqli->connect_error) die('Connect Error (' . $mysqli->connect_errno . ') ' . $mysqli->connect_error);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,10 +15,6 @@
   <link rel="stylesheet" type="text/css" href="Assets/css/bootstrap.min.css">
 
   <?php
-    include 'config.php';
-
-    $mysqli = new mysqli("localhost", $dbUser, $dbPass, $dbName);
-    if ($mysqli->connect_error) die('Connect Error (' . $mysqli->connect_errno . ') ' . $mysqli->connect_error);
 
     $search = (isset($_GET['search'])) ? $_GET['search'] : '';
     $display = (isset($_GET['display'])) ? $_GET['display'] : '';
@@ -18,7 +22,7 @@
 
 
     // Delete a book if requested
-    if ($_POST['delete']) {
+    if (isset($_POST['delete'])) {
       $deleteQuery = "DELETE FROM books WHERE Id={$_POST['delete']};";
       $mysqli->query($deleteQuery);
     }
@@ -129,8 +133,28 @@
       </div>
       <div>
         <ul class="nav navbar-nav">
-          <li><a href="index.php">Creator</a></li>
-          <li class="active"><a href="archive.php">Archive</a></li>
+          <?php if ($userWriteAccess) { ?>
+          <li>
+            <a href="index.php">Creator</a>
+          </li>
+          <?php } if ($userReadAccess) { ?>
+          <li class="active">
+            <a href="archive.php">Archive</a>
+          </li>
+          <?php } if ($userAdminAccess) { ?>
+          <li>
+            <a href="admin.php">Admin</a>
+          </li>
+          <?php } ?>
+        </ul>
+        <ul class="nav navbar-nav pull-right">
+          <li>
+            <p class="navbar-text"><?php echo $userDisplayName; ?></p>
+          </li>
+          <li class="divider-vertical" style="min-height: 50px; height: 100%; margin: 0 9px; border-left: 1px solid #f2f2f2; border-right: 1px solid #ffffff;"></li>
+          <li>
+            <a href="auth.php?logout">Sign Out</a>
+          </li>
         </ul>
       </div>
     </div>
@@ -211,9 +235,12 @@
             if ($res['Description']) echo "<small class='description'>{$res['Description']}</small><br>";
             echo "</div></div>";
             echo "<div class='col-sm-4 options''>";
-            echo "<a href=\"index.php?edit={$res['Id']}\" class='editLink'><button class='btn btn-default btn-sm' type='button'>Edit</button></a>";
+            if ($userWriteAccess)
+              echo "<a href=\"index.php?edit={$res['Id']}\" class='editLink'><button class='btn btn-default btn-sm' type='button'>Edit</button></a>";
+            if ($userWriteAccess)
             echo "<button type='button' class='clickable btn btn-warning btn-sm' onclick=\"deleteBook({$res['Id']}, '{$res['Title']}')\">Delete</button><br/>";
-            echo "<button type='button' class='clickable btn btn-primary btn-sm' onclick=\"displayEmbed(this)\">Embed Code</button>";
+            if ($userReadAccess)
+              echo "<button type='button' class='clickable btn btn-primary btn-sm' onclick=\"displayEmbed(this)\">Embed Code</button>";
             echo "<div class='embedCodeContainer'><textarea class='embedCode col-sm-11' rows='5' spellcheck='false'>&ltiframe src='$reader?bookID={$res['Id']}' allowfullscreen webkitallowfullscreen&gt&ltiframe&gt</textarea><div>";
             echo "</div></li><hr>";
           }

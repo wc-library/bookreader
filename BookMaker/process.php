@@ -16,9 +16,9 @@
    */
   function parseZipFilenames($zip_name, &$err = null) {
     // Open zip file & read filenames into array
-    $filenames = []; $hand = zip_open($zip_name);
+    $filenames = array(); $hand = zip_open($zip_name);
     while ($currResource = zip_read($hand))
-      $filenames[] = zip_entry_name($currResource);
+      array_push($filenames, zip_entry_name($currResource));
 
     // Remove path prefix from filenames
     $dir = array_shift($filenames);
@@ -29,14 +29,17 @@
     $ext = strrchr($filenames[0], ".");
 
     // Parse filenames into arrays
-    $delim = $GLOBALS['delimiter']; $tmp = [];
+    $delim = $GLOBALS['delimiter']; $tmp = array();
     foreach ($filenames as $index => $name) {
-      strtok($name, $delim);
-      $filenames[$index] = [
+
+      // Remove the prefix
+      strtok("!" . $name, $delim);
+
+      $filenames[$index] = array(
         'ind' => intval(strtok($delim)),
         'semantic' => strstr(strtok($delim), $ext, true),
         'filename' => $name
-      ];
+      );
       $tmp[$index] = $filenames[$index]['ind'];
     }
 
@@ -79,13 +82,13 @@
 
       // Replace missing indices with blank pages
       $calcTotal = $pages[count($pages) - 1]['ind'] - $pages[0]['ind'];
-      $missingInd = [];
+      $missingInd = array();
       if ( count($pages) < $calcTotal) {
         $ind = $pages[0]['ind'];
         for ($i = 0; $i <= $calcTotal; $i++) {
           if ($ind < $pages[$i]['ind']) {
-            $missingInd[] = $ind;
-            array_splice($pages, $i, 0, [[ 'ind' => $ind, 'semantic' => "Missing", 'filename' => "Blank.jpg"]]);
+            array_push($missingInd, $ind);
+            array_splice($pages, $i, 0, array(array( 'ind' => $ind, 'semantic' => "Missing", 'filename' => "Blank.jpg" )));
           }
           $ind++;
         }
@@ -121,9 +124,11 @@
     }
 
     // Write all information to be returned
-    $tmpStore = [ "action" => $action, "id" => $id, "title" => $title, "author" => $author, "desc" => $desc, "width" => $width,
-                  "height" => $height, "first_left" => $first_left, "cover" => $cover , "pages" => $pages ];
+    $tmpStore = array("action" => $action, "id" => $id, "title" => $title, "author" => $author, "desc" => $desc, "width" => $width,
+                      "height" => $height, "first_left" => $first_left, "cover" => $cover , "pages" => $pages );
     echo json_encode($tmpStore);
+
+
 
   // Step 2: orgainzation of pages & official write/edit of book to disk
   } elseif ($_POST['step'] == '2') {

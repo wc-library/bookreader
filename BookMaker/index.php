@@ -1,3 +1,10 @@
+<?php
+  include_once "auth.php";
+  include_once "config.php";
+  if (!$userWriteAccess)
+    header("Location: archive.php");
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,10 +25,9 @@
   </style>
 
   <?php
-    $action = ($_GET["edit"]) ? "edit" : "create";
+    $action = (isset($_GET["edit"])) ? "edit" : "create";
     // If editing a book, get information on book from MySqli DB
-    if ($_GET["edit"]) {
-      include "config.php";
+    if (isset($_GET["edit"])) {
       $id = $_GET["edit"];
 
       $mysqli = new mysqli("localhost", $dbUser, $dbPass, $dbName);
@@ -44,10 +50,28 @@
       </div>
       <div>
         <ul class="nav navbar-nav">
+          <?php if ($userWriteAccess) { ?>
           <li <?php if ($action == "create") echo "class='active'"; ?>>
             <a href="index.php">Creator</a>
           </li>
-          <li><a href="archive.php">Archive</a></li>
+          <?php } if ($userReadAccess) { ?>
+          <li>
+            <a href="archive.php">Archive</a>
+          </li>
+          <?php } if ($userAdminAccess) { ?>
+          <li>
+            <a href="admin.php">Admin</a>
+          </li>
+          <?php } ?>
+        </ul>
+        <ul class="nav navbar-nav pull-right">
+          <li>
+            <p class="navbar-text"><?php echo $userDisplayName; ?></p>
+          </li>
+          <li class="divider-vertical" style="min-height: 50px; height: 100%; margin: 0 9px; border-left: 1px solid #f2f2f2; border-right: 1px solid #ffffff;"></li>
+          <li>
+            <a href="auth.php?logout">Sign Out</a>
+          </li>
         </ul>
       </div>
     </div>
@@ -62,26 +86,26 @@
           <div class="form-group">
             <label class="control-label col-sm-2" for="title">Title:</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" name="title" id="title" <?php if ($info && $info["Title"]) echo "value='" . $info['Title'] ."'"; ?> required>
+              <input type="text" class="form-control" name="title" id="title" <?php if (isset($info) && $info["Title"]) echo "value='" . $info['Title'] ."'"; ?> required>
             </div>
           </div>
           <div class="form-group">
             <label class="control-label col-sm-2" for="author">Author:</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" name="author" id="author" <?php if ($info && $info["Author"]) echo "value='" . $info['Author'] ."'"; ?>>
+              <input type="text" class="form-control" name="author" id="author" <?php if (isset($info) && $info["Author"]) echo "value='" . $info['Author'] ."'"; ?>>
             </div>
           </div>
           <div class="form-group">
             <label class="control-label col-sm-2" for="description">Description:</label>
             <div class="col-sm-10">
-              <textarea form="form" class="form-control" name="description" id="description" rows="6"><?php if ($info && $info["Description"]) echo $info['Description']; ?></textarea>
+              <textarea form="form" class="form-control" name="description" id="description" rows="6"><?php if (isset($info) && $info["Description"]) echo $info['Description']; ?></textarea>
             </div>
           </div>
 
           <hr>
 
           <!-- If creating, add an upload element -->
-          <?php if (!$info) { ?>
+          <?php if (!isset($info)) { ?>
             <div class="form-group">
               <label class='control-label col-sm-2' for='zipUpload'>Upload: </label>
               <div class="input-group col-sm-5">

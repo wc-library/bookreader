@@ -1,3 +1,10 @@
+<?php
+  include_once "auth.php";
+  include_once "config.php";
+  if (!$userWriteAccess)
+    header("Location: archive.php");
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,10 +16,8 @@
   <script src="Assets/js/bootstrap.min.js"></script>
 
   <?php
-    include "config.php";
 
     // Move post variables into a javascript array 'post'
-
     $json = json_decode($_POST['json'], true);
     $action = $json['action'];
     if ($action == "edit") {
@@ -30,9 +35,9 @@
 
     echo  "<script>";
     echo    "var post = {$_POST['json']};";
-    if ($pages)
+    if (isset($pages))
       echo  "post['pages'] = $pages;";
-    if ($imgDir)
+    if (isset($imgDir))
       echo  "post['imgDir'] = '$imgDir';";
     echo  "</script>";
   ?>
@@ -84,8 +89,28 @@
       </div>
       <div>
         <ul class="nav navbar-nav">
-          <li><a href="index.php">Creator</a></li>
-          <li><a href="archive.php">Archive</a></li>
+        <?php if ($userWriteAccess) { ?>
+        <li>
+          <a href="index.php">Creator</a>
+        </li>
+        <?php } if ($userReadAccess) { ?>
+        <li>
+          <a href="archive.php">Archive</a>
+        </li>
+        <?php } if ($userAdminAccess) { ?>
+        <li>
+          <a href="admin.php">Admin</a>
+        </li>
+        <?php } ?>
+        </ul>
+        <ul class="nav navbar-nav pull-right">
+          <li>
+            <p class="navbar-text"><?php echo $userDisplayName; ?></p>
+          </li>
+          <li class="divider-vertical" style="min-height: 50px; height: 100%; margin: 0 9px; border-left: 1px solid #f2f2f2; border-right: 1px solid #ffffff;"></li>
+          <li>
+            <a href="auth.php?logout">Sign Out</a>
+          </li>
         </ul>
       </div>
     </div>
