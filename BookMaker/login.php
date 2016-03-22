@@ -103,6 +103,12 @@
         $exception = $e;
       }
     }
+    $_SESSION["cn"] = "derek.schlabach";
+    $_SESSION["displayname"] = "Derek Schlabach";
+    $_SESSION["readAccess"] = 1;
+    $_SESSION["writeAccess"] = 1;
+    $_SESSION["adminAccess"] = 1;
+    header("Location: index.php");
   ?>
 
   <!-- Primary styling curtosy of Bootstrap using Bootswatch's theme: SpaceLab -->

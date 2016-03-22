@@ -18,8 +18,9 @@ var directory = '/';
 var indexMap = Array();
 var lFirst = 0;
 var cover;
+var handle;
 
-function setVals(width, height, numLeafs, title, aauthor, adescription, adirectory, aindexMap, alFirst, acover) {
+function setVals(width, height, numLeafs, title, aauthor, adescription, adirectory, aindexMap, alFirst, aCover, aHandle) {
   pageWidth = width;
   pageHeight = height;
   br.numLeafs = numLeafs;
@@ -29,7 +30,8 @@ function setVals(width, height, numLeafs, title, aauthor, adescription, adirecto
   directory = adirectory;
   indexMap = aindexMap;
   lFirst = alFirst;
-  cover = acover;
+  cover = aCover;
+  handle = aHandle;
 }
 
 // Return the width of a given page.  Here we assume all images are 800 pixels wide
@@ -108,8 +110,68 @@ br.mode = br.constMode2up;
 // Override the path used to find UI images
 br.imagesBaseURL = 'BookReader/images/';
 
+br.buildShareDiv = function(jShareDiv) {
+    var pageView = handle;
+    var bookView = handle;
+    var self = this;
+
+    var jForm = $([
+        '<p>Copy and paste one of these options to share this book elsewhere.</p>',
+        '<form method="post" action="">',
+            '<fieldset>',
+                '<label for="booklink">Link to the book:</label>',
+                '<input type="text" name="booklink" id="booklink" value="' + bookView + '"/>',
+            '</fieldset>',
+            '<fieldset>',
+                '<label for="iframe">Embed a mini Book Reader:</label>',
+                '<fieldset class="sub">',
+                    '<label class="sub">',
+                        '<input type="radio" name="pages" value="' + this.constMode1up + '" checked="checked"/>',
+                        '1 page',
+                    '</label>',
+                    '<label class="sub">',
+                        '<input type="radio" name="pages" value="' + this.constMode2up + '"/>',
+                        '2 pages',
+                    '</label>',
+                    '<label class="sub">',
+                        '<input type="checkbox" name="thispage" value="thispage"/>',
+                        'Open to this page?',
+                    '</label>',
+                '</fieldset>',
+                '<textarea cols="30" rows="4" name="iframe" class="BRframeEmbed"></textarea>',
+            '</fieldset>',
+            '<fieldset class="center">',
+                '<button type="button" onclick="$.fn.colorbox.close();">Finished</button>',
+            '</fieldset>',
+        '</form>'].join('\n'));
+
+    jForm.appendTo(jShareDiv);
+
+    jForm.find('input').bind('change', function() {
+        var form = $(this).parents('form:first');
+        var params = {};
+        params.mode = $(form.find('input[name=pages]:checked')).val();
+        if (form.find('input[name=thispage]').attr('checked')) {
+            params.page = self.getPageNum(self.currentIndex());
+        }
+
+        // $$$ changeable width/height to be added to share UI
+        var frameWidth = "480px";
+        var frameHeight = "430px";
+        form.find('.BRframeEmbed').val(self.getEmbedCode(frameWidth, frameHeight, params));
+    })
+    jForm.find('input[name=thispage]').trigger('change');
+    jForm.find('input, textarea').bind('focus', function() {
+        this.select();
+    });
+
+    jForm.appendTo(jShareDiv);
+    jForm = ''; // closure
+
+}
+
 br.getEmbedCode = function(frameWidth, frameHeight, viewParams) {
-    return "<iframe src='" + document.location + "' allowFullScreen webkitAllowfullScreen></iframe>";
+    return "<iframe src='" + handle + "' allowFullScreen webkitAllowfullScreen></iframe>";
 }
 
 br.blankInfoDiv = function() {
@@ -154,6 +216,7 @@ function runAfterInit() {
   $('#BRtoolbar').find('.read').hide();
   $('#textSrch').hide();
   $('#btnSrch').hide();
+  $('#pageview').value = "test";
 
   $('#BRtoolbarbuttons').append($('<button>').addClass('BRicon full').attr({title: 'Go FullScreen'}).click(function() {
     if (document.fullscreenEnabled || document.mozFullScreenEnabled || document.documentElement.webkitRequestFullScreen) {

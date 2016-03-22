@@ -56,7 +56,7 @@
 
 
     echo '<script>';
-    echo "setVals({$res['Width']}, {$res['Height']}, $numPages, \"{$res['Title']}\", \"{$res['Author']}\", \"{$res['Description']}\", \"{$booksDir}Images/{$bookID}/\", $pageData, {$res['FirstLeft']}, \"{$res['Cover']}\");";
+    echo "setVals({$res['Width']}, {$res['Height']}, $numPages, \"{$res['Title']}\", \"{$res['Author']}\", \"{$res['Description']}\", \"{$booksDir}Images/{$bookID}/\", $pageData, {$res['FirstLeft']}, \"{$res['Cover']}\", \"{$res['Handle']}\");";
     echo 'br.init();';
     echo "runAfterInit();";
     echo '</script>';

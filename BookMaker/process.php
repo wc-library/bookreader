@@ -143,6 +143,8 @@
     $height = (isset($_POST['height'])) ? $_POST['height'] : '0';
     $width = (isset($_POST['width'])) ? $_POST['width'] : '0';
 
+
+
     // Insert into MySqli database
     if ($id)
       $query = "UPDATE books SET Title='$title', Author='$author', Description='$desc', FirstLeft=$first_left, Cover='$cover' WHERE Id=$id";
@@ -150,6 +152,46 @@
       $query = "INSERT INTO books (Title, Author, Description, Width, Height, FirstLeft, Cover) VALUES ('$title', '$author', '$desc', $width, $height, $first_left, '$cover');";
     $mysqli->query($query);
     if (!$id) $id = $mysqli->insert_id;
+
+
+
+    // Generate a handle
+    function combinePaths($path1, $path2) {
+      if ($path2 == "") return $path1;
+
+      $path1 = explode("/", $path1);
+      $path2 = explode("/", $path2);
+
+      while (count($path2) > 0) {
+        if ($path2[0] == "..")
+          array_pop($path1);
+        elseif (!($path2[0] == "." || $path2[0] == ""))
+          array_push($path1, $path2[0]);
+
+        array_shift($path2);
+      }
+
+      return implode("/", $path1);
+    }
+
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+    $currLoc = "{$_SERVER['SERVER_NAME']}{$_SERVER['REQUEST_URI']}";
+    $bookreader = $protocol . combinePaths(substr($currLoc, 0, strrpos($currLoc, "/")), $reader);
+    $bookPath = $bookreader . "?bookID=$id";
+    $handleGeneration = $handleGenerator . "?Action=Create&Url=" . $bookPath;
+
+    $handle = file_get_contents($handleGeneration);
+
+    if (!$handle || strpos($handle, "Error") !== False) {
+      $removeQuery = "DELETE FROM books WHERE Id=$id;";
+      $mysqli->query($removeQuery);
+      die("error: Error generating handle");
+    }
+
+    $handleQuery = "UPDATE books SET Handle='$handle' WHERE Id=$id;";
+    $mysqli->query($handleQuery);
+
+
 
     // Move files from tmp to disk
     $tmpDir = "tmp/";

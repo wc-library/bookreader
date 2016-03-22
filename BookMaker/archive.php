@@ -241,7 +241,7 @@
             echo "<button type='button' class='clickable btn btn-warning btn-sm' onclick=\"deleteBook({$res['Id']}, '{$res['Title']}')\">Delete</button><br/>";
             if ($userReadAccess)
               echo "<button type='button' class='clickable btn btn-primary btn-sm' onclick=\"displayEmbed(this)\">Embed Code</button>";
-            echo "<div class='embedCodeContainer'><textarea class='embedCode col-sm-11' rows='5' spellcheck='false'>&ltiframe src='$reader?bookID={$res['Id']}' allowfullscreen webkitallowfullscreen&gt&ltiframe&gt</textarea><div>";
+            echo "<div class='embedCodeContainer'><textarea class='embedCode col-sm-11' rows='5' spellcheck='false'>&ltiframe src='{$res['Handle']}' allowfullscreen webkitallowfullscreen&gt&ltiframe&gt</textarea><div>";
             echo "</div></li><hr>";
           }
 

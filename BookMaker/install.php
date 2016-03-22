@@ -66,7 +66,6 @@
               ?>
               <p>Update All Config Entries</p>
               <ul>
-                <li>Reader Path: A path to the directory containing the Wheaton Reader</li>
                 <li>Delimiter: Delimiter used for separating info in page file names</li>
                 <li>SQL Database: Database to be created (or used if it already exists)</li>
                 <li>SQL Username: Username for MySQL access</li>
@@ -80,7 +79,7 @@
             <div class="form-group">
               <label class="control-label col-sm-2" for="delimiter">Delimiter:</label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" name="delimiter" id="delimiter" value=<?php echo $delimiter; ?> required>
+                <input type="text" class="form-control" name="delimiter" id="delimiter" value="<?php echo $delimiter; ?>" required>
               </div>
             </div>
           </div>
@@ -88,7 +87,7 @@
             <div class="form-group">
               <label class="control-label col-sm-2" for="dbName">SQL Database:</label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" name="dbName" id="dbName" value=<?php echo $dbName ?> required>
+                <input type="text" class="form-control" name="dbName" id="dbName" value="<?php echo $dbName ?>" required>
               </div>
             </div>
           </div>
@@ -172,7 +171,7 @@
             return $absPath;
           }
 
-          $writingFiles = ["config.json", "tmp/", $_POST["readerPath"] . "Books/Images/", $_POST["readerPath"] . "Books/JSON/"];
+          $writingFiles = ["config.json", "tmp/", "{$booksDir}Images/", "{$booksDir}JSON/"];
           $notWritable = [];
           foreach ($writingFiles as $file)
             if (!is_writable($file))
@@ -181,7 +180,7 @@
           if (count($notWritable) > 0) {
           ?>
             <div class="col-sm-offset-1">
-              <p>Specified file(s) must be writable by the apache client</p>
+              <p>Specified file(s) (or possibly their parent directories) must be writable by the apache client</p>
               <ul>
               <?php
                 foreach ($notWritable as $file)
@@ -217,7 +216,8 @@
                 "Width INTEGER,",
                 "Height INTEGER,",
                 "FirstLeft TINYINT,",
-                "Cover VARCHAR(255)",
+                "Cover VARCHAR(255),",
+                "Handle VARCHAR(255)",
               ");"
             ]);
             $createGroupsTable = join("", [
@@ -272,6 +272,7 @@
               $mysqli->query($createUsersTable);
               $mysqli->query($insertUser);
             }
+
             ?>
               <div class="col-sm-offset-1">
                 <p>BookMaker Succesfully Installed</p>

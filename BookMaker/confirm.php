@@ -45,8 +45,8 @@
   <style>
     body { background: linear-gradient(to right,#A3B58E 0%,#C6D6AE 50%,#A3B58E 100%); }
     .clickable:hover { cursor: pointer; opacity: .8 }
-    #blackout { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 2000;}
-    #blackout img { height: 80%; position: absolute; left: 0; right: 0; margin-left: auto; margin-right: auto; top: 50%; transform: translateY(-50%); -ms-transform: translateY(-50%); -webkit-transform: translateY(-50%); -o-transform: translateY(-50%); -moz-transform: translateY(-50%); }
+    /*#blackout { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 2000;}
+    #blackout img { height: 80%; position: absolute; left: 0; right: 0; margin-left: auto; margin-right: auto; top: 50%; transform: translateY(-50%); -ms-transform: translateY(-50%); -webkit-transform: translateY(-50%); -o-transform: translateY(-50%); -moz-transform: translateY(-50%); }*/
     #form { color: #444; font-size: 110%; }
     #left_form { color: #111; }
     #title_div { margin-top: 40px; }
@@ -60,6 +60,24 @@
     #gallery .coverButton.coverButton-selected { opacity: .8; }
     #gallery .coverButton.coverButton-selected { cursor: default; }
     div.cat-header {font-size: 90%; text-align: right; }
+
+    #blackout {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 2;
+      background-color: rgba(0, 0, 0, .1);
+    }
+
+    #blackoutLoading {
+      position: absolute;
+      width: 10%;
+      left: 50%;
+      top: 30%;
+      transform: translateX(-50%);
+    }
   </style>
   <script>
     function displayImg() {
@@ -235,6 +253,23 @@
       document.getElementById("form_cover").value = newSrc.substr(newSrc.lastIndexOf("/") + 1);
     }
 
+    // Display a loading gif
+    function loadingScreen() {
+      var blackout = $( document.createElement("div") )
+        .attr("id", "blackout");
+
+      var loading = $( document.createElement("img") )
+        .attr("id", "blackoutLoading")
+        .attr("src", "Assets/processing.gif");
+
+      $( document.body ).append(blackout.append(loading));
+    }
+
+    // Remove the loading gif
+    function loadingScreenClear() {
+      $( "#blackout" ).remove();
+    }
+
     // Create a hidden form element with given name and val
     function createFormElment(name, val) {
       var input = document.createElement("input");
@@ -268,13 +303,18 @@
 
       var xmlhttp = new XMLHttpRequest();
       xmlhttp.onreadystatechange = function() { if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+
+        loadingScreenClear();
         if (xmlhttp.responseText.indexOf("error") == -1)
           document.location.href = "archive.php?search=" + xmlhttp.responseText + "&display=" + xmlhttp.responseText;
+        else
+          alert(xmlhttp.responseText);
 
         //validation?
       }};
       xmlhttp.open("POST", "process.php", true);
       xmlhttp.send(new FormData(form));
+      loadingScreen();
 
       return false;
     }
