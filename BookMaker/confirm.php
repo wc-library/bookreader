@@ -45,8 +45,6 @@
   <style>
     body { background: linear-gradient(to right,#A3B58E 0%,#C6D6AE 50%,#A3B58E 100%); }
     .clickable:hover { cursor: pointer; opacity: .8 }
-    /*#blackout { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 2000;}
-    #blackout img { height: 80%; position: absolute; left: 0; right: 0; margin-left: auto; margin-right: auto; top: 50%; transform: translateY(-50%); -ms-transform: translateY(-50%); -webkit-transform: translateY(-50%); -o-transform: translateY(-50%); -moz-transform: translateY(-50%); }*/
     #form { color: #444; font-size: 110%; }
     #left_form { color: #111; }
     #title_div { margin-top: 40px; }
@@ -60,24 +58,9 @@
     #gallery .coverButton.coverButton-selected { opacity: .8; }
     #gallery .coverButton.coverButton-selected { cursor: default; }
     div.cat-header {font-size: 90%; text-align: right; }
-
-    #blackout {
-      position: fixed;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      z-index: 2;
-      background-color: rgba(0, 0, 0, .1);
-    }
-
-    #blackoutLoading {
-      position: absolute;
-      width: 10%;
-      left: 50%;
-      top: 30%;
-      transform: translateX(-50%);
-    }
+    #blackout { position: fixed; width: 100%; height: 100%; top: 0; left: 0; z-index: 2; background-color: rgba(0, 0, 0, .1); }
+    #blackout .image { height: 80%; position: absolute; left: 0; right: 0; margin-left: auto; margin-right: auto; top: 50%; transform: translateY(-50%); -ms-transform: translateY(-50%); -webkit-transform: translateY(-50%); -o-transform: translateY(-50%); -moz-transform: translateY(-50%); }
+    #blackoutLoading { position: absolute; width: 10%; left: 50%; top: 30%; transform: translateX(-50%); }
   </style>
   <script>
     function displayImg() {
@@ -86,6 +69,7 @@
 
       var img = document.createElement("img");
       img.src = this.src;
+      img.classList.add("image");
       blackout.appendChild(img);
       document.body.appendChild(blackout);
 

@@ -2,7 +2,7 @@
   include 'config.php';
 
   // SafeGuards
-  if (!isset($_POST) || !isset($_POST['action']) || !isset($_POST['step'])) exit("Something Went Wrong");
+  if (!isset($_POST) || !isset($_POST['action']) || !isset($_POST['step'])) exit("error: Something Went Wrong");
   $mysqli = new mysqli("localhost", $dbUser, $dbPass, $dbName);
   if ($mysqli->connect_error) die('Connect Error (' . $mysqli->connect_errno . ') ' . $mysqli->connect_error);
 
@@ -155,7 +155,8 @@
 
 
 
-    // Generate a handle
+
+
     function combinePaths($path1, $path2) {
       if ($path2 == "") return $path1;
 
@@ -174,22 +175,26 @@
       return implode("/", $path1);
     }
 
-    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
-    $currLoc = "{$_SERVER['SERVER_NAME']}{$_SERVER['REQUEST_URI']}";
-    $bookreader = $protocol . combinePaths(substr($currLoc, 0, strrpos($currLoc, "/")), $reader);
-    $bookPath = $bookreader . "?bookID=$id";
-    $handleGeneration = $handleGenerator . "?Action=Create&Url=" . $bookPath;
 
-    $handle = file_get_contents($handleGeneration);
+    if ($action == "create") {
+      // Generate a handle
+      $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+      $currLoc = "{$_SERVER['SERVER_NAME']}{$_SERVER['REQUEST_URI']}";
+      $bookreader = $protocol . combinePaths(substr($currLoc, 0, strrpos($currLoc, "/")), $reader);
+      $bookPath = $bookreader . "?bookID=$id";
+      $handleGeneration = $handleGenerator . "?Action=Create&Url=" . $bookPath;
 
-    if (!$handle || strpos($handle, "Error") !== False) {
-      $removeQuery = "DELETE FROM books WHERE Id=$id;";
-      $mysqli->query($removeQuery);
-      die("error: Error generating handle");
+      $handle = file_get_contents($handleGeneration);
+
+      if (!$handle || strpos($handle, "Error") !== False) {
+        $removeQuery = "DELETE FROM books WHERE Id=$id;";
+        $mysqli->query($removeQuery);
+        die("error: Error generating handle");
+      }
+
+      $handleQuery = "UPDATE books SET Handle='$handle' WHERE Id=$id;";
+      $mysqli->query($handleQuery);
     }
-
-    $handleQuery = "UPDATE books SET Handle='$handle' WHERE Id=$id;";
-    $mysqli->query($handleQuery);
 
 
 
