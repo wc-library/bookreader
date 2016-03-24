@@ -16,14 +16,17 @@
    */
   function parseZipFilenames($zip_name, &$err = null) {
     // Open zip file & read filenames into array
-    $filenames = array(); $hand = zip_open($zip_name);
+    $filenames = array();
+    $hand = zip_open($zip_name);
     while ($currResource = zip_read($hand))
       array_push($filenames, zip_entry_name($currResource));
 
-    // Remove path prefix from filenames
-    $dir = array_shift($filenames);
-    foreach ($filenames as $index => $name)
-      $filenames[$index] = substr($name, (strpos($name, $dir) + strlen($dir)));
+    // Remove path prefix from filenames if the images are in a directory
+    if (substr($filenames[0], -1) == "/") {
+      $dir = array_shift($filenames);
+      foreach ($filenames as $index => $name)
+        $filenames[$index] = substr($name, (strpos($name, $dir) + strlen($dir)));
+    }
 
     // Check that all visible files have the same extension
     $ext = strrchr($filenames[0], ".");
