@@ -55,7 +55,8 @@
             <a href="admin.php">Admin</a>
           </li>
           <?php } ?>
-        </ul>
+	<li><a href="https://libmanuals.wheaton.edu/node/561">Help</a></li>   
+     </ul>
         <ul class="nav navbar-nav pull-right">
           <li>
             <p class="navbar-text"><?php echo $userDisplayName; ?></p>
