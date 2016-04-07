@@ -194,7 +194,7 @@
       row.style.marginBottom = "20px";
 
       document.getElementById("gallery").appendChild(row);
-      for (var j = i * perRow; j < (i + 1) * perRow; j++) {
+      for (var j = i * perRow; (j < (i + 1) * perRow) && (j < pages.length); j++) {
         var item = document.createElement("div");
         item.classList.add("col-sm-" + (12 / perRow));
 
