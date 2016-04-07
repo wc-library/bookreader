@@ -2,9 +2,29 @@
   include 'config.php';
 
   // SafeGuards
-  if (!isset($_POST) || !isset($_POST['action']) || !isset($_POST['step'])) exit("error: Something Went Wrong");
+  if (!isset($_POST['action']) || !isset($_POST['step'])) {
+
+    // File Exceeds Max Upload Size
+    if (empty($_FILES) && empty($_POST) && isset($_SERVER['REQUEST_METHOD']) && strtolower($_SERVER['REQUEST_METHOD']) == 'post') {
+      $max_upload_size = min(ini_get('post_max_size'), ini_get('upload_max_filesize'));
+      $exitStr = "Max File Upload Size: {$max_upload_size}.\n\nPlease contact your server administrator (di.initiatives@wheaton.edu) to upload a larger file";
+
+      header('HTTP/1.1 500 Internal Server Error');
+      header('Content-Type: text/html');
+      exit($exitStr);
+    }
+
+    header('HTTP/1.1 500 Internal Server Error');
+    header('Content-Type: text/html');
+    exit("error: Something Went Wrong");
+  }
+
   $mysqli = new mysqli("localhost", $dbUser, $dbPass, $dbName);
-  if ($mysqli->connect_error) die('Connect Error (' . $mysqli->connect_errno . ') ' . $mysqli->connect_error);
+  if ($mysqli->connect_error) {
+    header('HTTP/1.1 500 Internal Server Error');
+    header('Content-Type: text/html');
+    die('Connect Error (' . $mysqli->connect_errno . ') ' . $mysqli->connect_error);
+  }
 
   /**
    * parseFilenames
@@ -77,6 +97,7 @@
     $first_left = (isset($_POST['first_left'])) ? $_POST['first_left'] : '1';
     $cover = (isset($_POST['cover'])) ? $_POST['cover'] : '';
 
+
     // Parse zipped pages
     if ($action == "create") {
       $pages = parseZipFilenames($_FILES['zipUpload']['tmp_name']);
@@ -129,6 +150,9 @@
     // Write all information to be returned
     $tmpStore = array("action" => $action, "id" => $id, "title" => $title, "author" => $author, "desc" => $desc, "width" => $width,
                       "height" => $height, "first_left" => $first_left, "cover" => $cover , "pages" => $pages );
+
+
+    header('Content-Type: application/json');
     echo json_encode($tmpStore);
 
 
@@ -155,9 +179,6 @@
       $query = "INSERT INTO books (Title, Author, Description, Width, Height, FirstLeft, Cover) VALUES ('$title', '$author', '$desc', $width, $height, $first_left, '$cover');";
     $mysqli->query($query);
     if (!$id) $id = $mysqli->insert_id;
-
-
-
 
 
     function combinePaths($path1, $path2) {
@@ -198,8 +219,6 @@
       $handleQuery = "UPDATE books SET Handle='$handle' WHERE Id=$id;";
       $mysqli->query($handleQuery);
     }
-
-
 
     // Move files from tmp to disk
     $tmpDir = "tmp/";

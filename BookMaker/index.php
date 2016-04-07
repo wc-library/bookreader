@@ -148,27 +148,41 @@
         evt.currentTarget.parentNode.parentNode.parentNode.getElementsByTagName("input")[1].value = upFile;
       };
 
-    // Submit form using Ajax & move on to confirm.php once it has run
+    // Submit form using Ajax & move on to confirm.php if it succeeds
     function submitForm(form) {
+
       var xmlhttp = new XMLHttpRequest();
-      xmlhttp.onreadystatechange = function() { if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+      xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == 4) {
 
-          var results = JSON.parse(xmlhttp.responseText);
-
-          var form = document.createElement("form");
-          form.action = "confirm.php"
-          form.method = "POST";
-          var json = document.createElement("input");
-          json.type = "hidden";
-          json.name = "json";
-          json.value = JSON.stringify(results);
-          form.appendChild(json);
-          document.body.appendChild(form);
-          form.submit();
-
+          // Enable Fields again
           for (var i in form.elements) form.elements[i].disabled = false;
 
-      }};
+          // Process Step 1 was successful, move on to confirm.php
+          if (xmlhttp.status == 200) {
+
+            var results = JSON.parse(xmlhttp.responseText);
+
+            var confirmForm = document.createElement("form");
+            confirmForm.action = "confirm.php"
+            confirmForm.method = "POST";
+
+            var json = document.createElement("input");
+            json.type = "hidden";
+            json.name = "json";
+            json.value = JSON.stringify(results);
+
+            confirmForm.appendChild(json);
+            //document.body.appendChild(confirmForm);
+            confirmForm.submit();
+
+          } else {
+            alert(xmlhttp.responseText);
+          }
+        }
+
+
+      };
       xmlhttp.open("POST", "process.php", true);
       xmlhttp.send(new FormData(form));
 
