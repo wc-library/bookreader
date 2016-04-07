@@ -185,6 +185,7 @@
     if (post['author']) document.getElementById("author_div").getElementsByClassName("cat-info")[0].innerHTML = post['author'];
     else document.getElementById("author_div").style.display = "none";
 
+    console.log(pages);
     // Number of imgs displayed per row
     var perRow = 4;
     // Display all images uploaded in the gallery div
