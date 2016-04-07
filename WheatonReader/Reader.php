@@ -61,7 +61,7 @@
     echo "runAfterInit();";
     echo '</script>';
   }
-  $db->close();
+  $mysqli->close();
 ?>
 
 </body>
