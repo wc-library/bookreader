@@ -52,7 +52,7 @@
     $hand = fopen($jsonFile, "r");
     $pageData = fread($hand, filesize($jsonFile));
     $numPages = count(json_decode($pageData));
-    fclose($imageFiles);
+    fclose($hand);
 
 
     echo '<script>';
