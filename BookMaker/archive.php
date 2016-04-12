@@ -22,9 +22,14 @@
 
 
     // Delete a book if requested
-    if (isset($_POST['delete'])) {
+    if (isset($_POST['delete']) && $userWriteAccess) {
       $deleteQuery = "DELETE FROM books WHERE Id={$_POST['delete']};";
       $mysqli->query($deleteQuery);
+
+      /*if (isset($_POST['handle'])) {
+        $delHandleUrl = $handleGenerator . "?Action=Delete&Handle=" . $_POST['handle'];
+        echo "<script> console.log('$delHandleUrl'); </script>";
+      }*/
     }
   ?>
   <style>
@@ -90,7 +95,7 @@
     }
 
     // Set a book of given Id to be deleted then reload page after confirming that they want to delete the book
-    function deleteBook(id, title) {
+    function deleteBook(id, title, handle) {
       if (confirm("Are you sure you would like to delete '" + title + "'?")) {
         var form = document.createElement('form');
         form.setAttribute("method", "post");
@@ -101,7 +106,14 @@
         deleteVal.setAttribute('name', 'delete');
         deleteVal.setAttribute('value', id);
 
+        var deleteHandle = document.createElement('input');
+        deleteHandle.setAttribute('type', 'hidden');
+        deleteHandle.setAttribute('name', 'handle');
+        deleteHandle.setAttribute('value', handle);
+
         form.appendChild(deleteVal);
+        form.appendChild(deleteHandle);
+
         document.body.appendChild(form);
         form.submit();
       }
@@ -240,7 +252,7 @@
             if ($userWriteAccess)
               echo "<a href=\"index.php?edit={$res['Id']}\" class='editLink'><button class='btn btn-default btn-sm' type='button'>Edit</button></a>";
             if ($userWriteAccess)
-            echo "<button type='button' class='clickable btn btn-warning btn-sm' onclick=\"deleteBook({$res['Id']}, '{$res['Title']}')\">Delete</button><br/>";
+            echo "<button type='button' class='clickable btn btn-warning btn-sm' onclick=\"deleteBook({$res['Id']}, '{$res['Title']}', '{$res['Handle']}')\">Delete</button><br/>";
             if ($userReadAccess)
               echo "<button type='button' class='clickable btn btn-primary btn-sm' onclick=\"displayEmbed(this)\">Embed Code</button>";
             echo "<div class='embedCodeContainer'><textarea class='embedCode col-sm-11' rows='5' spellcheck='false'>&ltiframe src='{$res['Handle']}' allowfullscreen webkitallowfullscreen&gt&ltiframe&gt</textarea><div>";

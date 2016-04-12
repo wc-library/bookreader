@@ -85,7 +85,7 @@
   <div class="container">
       <div class="col-sm-10 col-sm-offset-1">
         <h1>Digital Book <?php echo ($action == "create") ? "Creator" : "Editor";?></h1>
-        <form class="form-horizontal" id="form" role="form" onsubmit="return submitForm(this)">
+        <form class="form-horizontal" id="form" role="form">
           <div class="form-group">
             <label class="control-label col-sm-2" for="title">Title:</label>
             <div class="col-sm-10">
@@ -149,12 +149,14 @@
       };
 
     // Submit form using Ajax & move on to confirm.php if it succeeds
-    function submitForm(form) {
+    document.getElementById("form").onsubmit = function(event) {
+
+      event.preventDefault();
+      var form = event.currentTarget;
 
       var xmlhttp = new XMLHttpRequest();
       xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4) {
-
           // Enable Fields again
           for (var i in form.elements) form.elements[i].disabled = false;
 
@@ -173,14 +175,13 @@
             json.value = JSON.stringify(results);
 
             confirmForm.appendChild(json);
-            //document.body.appendChild(confirmForm);
+            document.body.appendChild(confirmForm);
             confirmForm.submit();
 
           } else {
             alert(xmlhttp.responseText);
           }
         }
-
 
       };
       xmlhttp.open("POST", "process.php", true);
@@ -191,7 +192,7 @@
 
       // Disable reloading of page by cancelling default submission
       return false;
-    }
+    };
   </script>
 </body>
 </html>
