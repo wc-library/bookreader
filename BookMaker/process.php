@@ -218,13 +218,14 @@
 
       $handleQuery = "UPDATE books SET Handle='$handle' WHERE Id=$id;";
       $mysqli->query($handleQuery);
-    }
 
-    // Move files from tmp to disk
-    $tmpDir = "tmp/";
-    mkdir($booksDir . "Images/" . $id);
-    foreach ($pages as $currPage)
-      rename($tmpDir . $currPage['filename'], $booksDir . "Images/" . $id . "/" . $currPage['filename']);
+      // Move files from tmp to disk
+      $tmpDir = "tmp/";
+      mkdir($booksDir . "Images/" . $id);
+      foreach ($pages as $currPage)
+        rename($tmpDir . $currPage['filename'], $booksDir . "Images/" . $id . "/" . $currPage['filename']);
+
+    }
 
     // Write JSON file to disk (page order)
     $f = fopen($booksDir . "JSON/" . $id . ".json", "w");
