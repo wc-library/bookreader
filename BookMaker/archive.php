@@ -71,6 +71,8 @@
     .clickable:hover { opacity: .9; cursor: pointer; background-color: rgba(200, 200, 200, .35); }
     .no_scroll { overflow: hidden; }
     .blackout { position: fixed; width: 100%; height: 100%; z-index: 100; background-color: rgba(0, 0, 0, .6); left: 0; top: 0; }
+    .blackout .closeButt { position: absolute; font-size: 6vw; top: 2%; right: 2%; color: #222; }
+    .blackout .closeButt:hover { cursor: pointer; color: #383838; }
     #bookView { margin: 0; position: absolute; top: 50%; left: 50%; margin-right: -50%; height: 80%; width: 80%;
                        transform: translate(-50%, -50%); -webkit-transform: translate(-50%, -50%); -moz-transform: translate(-50%, -50%); -ms-transform: translate(-50%, -50%); -o-transform: translate(-50%, -50%); }
     #bookView.no_center { transform: none; -webkit-transform: none; -moz-transform: none; -ms-transform: none; -o-transform: none; }
@@ -90,6 +92,11 @@
       internal.setAttribute('webkitallowfullscreen', 'true');
       internal.setAttribute('allowfullscreen', 'true')
       blackout.appendChild(internal);
+
+      var closeButt = document.createElement("span");
+      closeButt.classList.add("closeButt", "glyphicon", "glyphicon-remove");
+      //closeButt.src = "Assets/close.png";
+      blackout.appendChild(closeButt);
 
       document.body.appendChild(blackout);
       document.body.classList.add("no_scroll");
