@@ -30,6 +30,9 @@
 
     .userRow .groupsDropDown { width: inherit; }
     .usersWrapper .table-responsive { transition: all 2s; }
+
+    #handleUpdate { margin-top: 80px; }
+    #handleUpdateProcessingDisplay .book .statusImg { height: 14px; margin-right: 10px; }
   </style>
 </head>
 
@@ -55,7 +58,7 @@
             <a href="admin.php">Admin</a>
           </li>
           <?php } ?>
-	<li><a href="https://libmanuals.wheaton.edu/node/561">Help</a></li>   
+	<li><a href="https://libmanuals.wheaton.edu/node/561">Help</a></li>
      </ul>
         <ul class="nav navbar-nav pull-right">
           <li>
@@ -76,6 +79,7 @@
     <div class="col-sm-8 col-sm-offset-2">
       <h1>Admin Panel</h1>
 
+      <h2>Users</h2>
       <div class="row">
         <div id="usersWrapper">
           <div class="table-responsive">
@@ -111,7 +115,9 @@
       </div>
 
       <div class="row">
-        <button class="btn btn-default col-sm-4 col-sm-offset-4" id="newUserButt" data-toggle="modal" data-target="#newUserModal">Add a New User</button>
+        <button class="btn btn-default col-sm-4 col-sm-offset-4" id="newUserButt" data-toggle="modal" data-target="#newUserModal">
+          Add a New User
+        </button>
       </div>
 
       <div class="modal fade" id=newUserModal role="dialog">
@@ -146,6 +152,14 @@
             </form>
           </div>
         </div>
+      </div>
+
+      <h2 id="handleUpdate">Update Handles</h2>
+      <div class="row">
+        <button class="btn btn-warning" id="updateHandlesButt">
+          Update All Handles To Point To The Current Server
+        </button>
+        <div id="handleUpdateProcessingDisplay"></div>
       </div>
 
     </div>
@@ -209,16 +223,20 @@
         var newGid = accessNameSlot.find( ".groupsDropDown" ).val();
         var newGroupName = accessNameSlot.find( ".groupsDropDown option:selected" ).text();
 
-        $.post("admin_ajax.php", { Uid: id, Gid: newGid, Action: action }, function(error) {
-          if (!error)
+        $.ajax({
+          type: "POST",
+          url: "admin_ajax.php",
+          data: { Uid: id, Gid: newGid, Action: action },
+          success: function(data) {
             accessNameSlot.find( ".val" ).html(newGroupName);
-          else
+            accessNameSlot.find( ".groupsDropDown" ).remove();
+            accessNameSlot.find( ".val" ).css("display", "");
+            modifyButtonsSlot.find( ".saveCancelButtons" ).remove();
+            modifyButtonsSlot.find( ".modifyButt" ).css("display", "");
+          },
+          error: function(jqXHR, error) {
             console.log(error);
-
-          accessNameSlot.find( ".groupsDropDown" ).remove();
-          accessNameSlot.find( ".val" ).css("display", "");
-          modifyButtonsSlot.find( ".saveCancelButtons" ).remove();
-          modifyButtonsSlot.find( ".modifyButt" ).css("display", "");
+          }
         });
 
       });
@@ -236,34 +254,104 @@
       var id = userRow.find( ".id" ).text();
       var cn = userRow.find( ".cn" ).text();
 
-
       if (confirm("Delete User: '" + cn + "'?")) {
         var action = "deleteUser";
 
-        $.post("admin_ajax.php", {Uid: id, Action: action}, function(error) {
-
-          if (!error)
+        $.ajax({
+          type: "POST",
+          url: "admin_ajax.php",
+          data: {Uid: id, Action: action},
+          success: function(data) {
             window.location.reload();
-          else
+          },
+          error: function(error) {
             console.log(error);
-
+          }
         });
       }
     });
 
     $( "#addUserForm" ).submit(function(e) {
 
-      $.post("admin_ajax.php", $( "#addUserForm" ).serialize(), function(error) {
-
-        if (!error)
+      $.ajax({
+        type: "POST",
+        url: "admin_ajax.php",
+        data: $( "#addUserForm" ).serialize(),
+        success: function(data) {
           window.location.reload();
-        else
+        },
+        error: function(jqXHR, error) {
           console.log(error);
-
+        }
       });
 
       e.preventDefault();
       return false;
+    });
+
+
+    function updateHandle(id, handle, success, failure) {
+      var action = "updateHandle";
+      $.ajax({
+        type: "POST",
+        url: "admin_ajax.php",
+        data: {Action: action, Id: id, Handle: handle},
+        success: function(data) {
+          if (success)
+            success(data);
+        },
+        error: function(jqXHR, error) {
+          if (failure)
+            failure(error);
+        }
+      });
+    }
+
+    $( "#updateHandlesButt" ).hover(
+      function() {
+        $( this ).removeClass("btn-warning").addClass("btn-danger");
+      }, function() {
+        $( this ).removeClass("btn-danger").addClass("btn-warning");
+      }
+    ).click( function() {
+      $confirmation = "Are you sure you want to update all handles? This will modify every handle stored in the database.";
+      if (confirm($confirmation)) {
+        var action = "retrieveHandles";
+
+        $.ajax({
+          type: "POST",
+          url: "admin_ajax.php",
+          data: {Action: action},
+          dataType: "json",
+          success: function(data) {
+
+            var display = $( handleUpdateProcessingDisplay );
+
+            data.forEach(function(book) {
+              // Give some sort of display & processing gif for each book
+              var newLine = $( "<div>", { class: "book book" + book["Id"] } ).append(
+                $( "<img>", { src: "Assets/processing.gif", class: "statusImg" } ),
+                $( "<span>" ).text(book["Handle"] + " (" + book["Title"] + ") ==> ")
+              );
+
+              display.append(newLine);
+
+              updateHandle(book["Id"], book["Handle"], function(data) {
+                newLine.find( ".statusImg" ).attr( "src", "Assets/success.png" );
+                newLine.append( $( "<span>", { class: "alert-success" } ).text(data) );
+              }, function(error) {
+                newLine.find( ".statusImg" ).attr( "src", "Assets/failure.jpg" );
+                newLine.append( $( "<span>", { class: 'alert-danger' } ).text(error) );
+              });
+            });
+
+          },
+          error: function(jqXHR, error) {
+            console.log(error);
+          }
+        });
+      }
+
     });
   </script>
 

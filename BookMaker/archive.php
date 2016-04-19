@@ -16,6 +16,23 @@
 
   <?php
 
+    function rrmdir($dir) {
+      foreach(glob($dir . '/*') as $file) {
+        if (is_dir($file)) rrmdir($file);
+        else unlink($file);
+      }
+      rmdir($dir);
+    }
+
+    function asyncDeleteHandle($handle) {
+      global $handleGenerator;
+
+      $url.= "$handleGenerator?Action=Delete&Handle=$handle";
+
+      $cmd = "curl '$url' > /dev/null 2>&1 &";
+      exec($cmd, $output, $exit);
+    }
+
     $search = (isset($_GET['search'])) ? $_GET['search'] : '';
     $display = (isset($_GET['display'])) ? $_GET['display'] : '';
     $page = (isset($_GET['page'])) ? $_GET['page'] : '1';
@@ -23,13 +40,23 @@
 
     // Delete a book if requested
     if (isset($_POST['delete']) && $userWriteAccess) {
-      $deleteQuery = "DELETE FROM books WHERE Id={$_POST['delete']};";
+      $id = $_POST['delete'];
+
+      // Delete Mysql Row
+      $deleteQuery = "DELETE FROM books WHERE Id=$id;";
       $mysqli->query($deleteQuery);
 
-      /*if (isset($_POST['handle'])) {
-        $delHandleUrl = $handleGenerator . "?Action=Delete&Handle=" . $_POST['handle'];
-        echo "<script> console.log('$delHandleUrl'); </script>";
-      }*/
+      // Delete Images
+      $dir = $booksDir . "Images/" . $id;
+      rrmdir($dir);
+
+      // Delete Json file
+      $file = $booksDir . "JSON/" . $id . ".json";
+      unlink($file);
+
+      // Delete Handle
+      if (isset($_POST['handle']))
+        asyncDeleteHandle($_POST['handle']);
     }
   ?>
   <style>
