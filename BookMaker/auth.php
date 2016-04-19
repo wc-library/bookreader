@@ -9,6 +9,7 @@
   }
 
   if (isset($_SESSION["cn"])) {
+
     $userCN = $_SESSION["cn"];
     $userReadAccess = $_SESSION["readAccess"];
     $userWriteAccess = $_SESSION["writeAccess"];
@@ -18,6 +19,8 @@
       $userDisplayName = $_SESSION["displayname"];
     else
       $userDisplayName = $_SESSION["cn"];
-  } else
+      
+  } else {
     header("Location: login.php");
     die();
+  }
