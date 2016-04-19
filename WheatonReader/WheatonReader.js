@@ -208,6 +208,7 @@ br.buildInfoDiv = function(jInfoDiv)
       var coverPhoto = 'Books/white.jpg';
     jInfoDiv.find('.BRfloatCover').append(['<div style="height: 140px; min-width: 80px; padding: 0; margin: 0;"><img src="' + coverPhoto + '" alt="' + this.title + '" height="140px" /></div>'].join(''));
     jInfoDiv.find('.BRfloatTitle h2').text(this.bookTitle);
+    jInfoDiv.find('.BRfloatTitle').append('<div class="author"><em>' + author + '</em></div>');
     jInfoDiv.find('.BRfloatDescription p').text(description);
 }
 
