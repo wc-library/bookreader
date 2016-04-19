@@ -20,3 +20,4 @@
       $userDisplayName = $_SESSION["cn"];
   } else
     header("Location: login.php");
+    die();

@@ -145,11 +145,14 @@
 
       // Get height & width of all pages by get size of the cover
       list($width, $height) = getimagesize($tmpDir . $cover);
-    }
 
-    // Write all information to be returned
-    $tmpStore = array("action" => $action, "id" => $id, "title" => $title, "author" => $author, "desc" => $desc, "width" => $width,
-                      "height" => $height, "first_left" => $first_left, "cover" => $cover , "pages" => $pages );
+      // Write all information to be returned
+      $tmpStore = array("action" => $action, "id" => $id, "title" => $title, "author" => $author, "desc" => $desc, "width" => $width,
+                        "height" => $height, "first_left" => $first_left, "cover" => $cover , "pages" => $pages );
+    } else {
+      $tmpStore = array("action" => $action, "id" => $id, "title" => $title, "author" => $author, "desc" => $desc,
+                        "first_left" => $first_left, "cover" => $cover );
+    }
 
 
     header('Content-Type: application/json');
