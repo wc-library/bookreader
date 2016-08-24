@@ -220,13 +220,13 @@ function runAfterInit() {
   $('#pageview').value = "test";
 
   $('#BRtoolbarbuttons').append($('<button>').addClass('BRicon full').attr({title: 'Go FullScreen'}).click(function() {
-    if (document.fullscreenEnabled || document.mozFullScreenEnabled || document.documentElement.webkitRequestFullScreen) {
+    if (document.fullscreenEnabled || document.mozFullScreenEnabled || document.documentElement.webkitRequestFullscreen) {
       if ( document.documentElement.requestFullscreen ) {
         document.documentElement.requestFullscreen();
       } else if ( document.documentElement.mozRequestFullScreen ) {
         document.documentElement.mozRequestFullScreen();
-      } else if ( document.documentElement.webkitRequestFullScreen ) {
-        document.documentElement.webkitRequestFullScreen( document.documentElement.ALLOW_KEYBOARD_INPUT );
+      } else if ( document.documentElement.webkitRequestFullscreen ) {
+        document.documentElement.webkitRequestFullscreen( document.documentElement.ALLOW_KEYBOARD_INPUT );
       } else if (document.documentElement.msRequestFullscreen) {
         document.documentElement.msRequestFullscreen();
       }
@@ -234,6 +234,13 @@ function runAfterInit() {
       $('#BRtoolbarbuttons .fullClose').show();
     }
   }));
+
+  if(document.fullscreenEnabled || document.mozFullScreenEnabled || document.documentElement.webkitRequestFullscreen){
+    //Nothing needed at the moment
+  }else{
+    $('#BRtoolbarbuttons .full').hide();
+  }
+  
   $('#BRtoolbarbuttons').append($('<button>').addClass('BRicon fullClose').attr({title: 'Exit Fullscreen'}).click(function() {
     if (document.exitFullscreen ) {
       document.exitFullscreen();
