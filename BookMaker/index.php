@@ -63,7 +63,7 @@
             <a href="admin.php">Admin</a>
           </li>
           <?php } ?>
-        <li><a href="https://libmanuals.wheaton.edu/node/561">Help</a></li>
+        <li><a href="https://libportal.wheaton.edu/node/1755">Help</a></li>
 
         </ul>
         <ul class="nav navbar-nav pull-right">
